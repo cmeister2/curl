@@ -39,8 +39,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
   FUZZ_DATA fuzz;
   TLV tlv;
 
+  /* Have to set all fields to zero before getting to the terminate function */
+  memset(fuzz, 0, sizeof(FUZZ_DATA));
+
   if(size < sizeof(TLV_RAW)) {
-    /* Not enough data */
+    /* Not enough data for a single TLV - don't continue */
     goto EXIT_LABEL;
   }
 
