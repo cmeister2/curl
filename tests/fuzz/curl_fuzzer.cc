@@ -136,6 +136,13 @@ EXIT_LABEL:
  */
 void fuzz_terminate_fuzz_data(FUZZ_DATA *fuzz)
 {
+  printf("Term diags: URL %p username %p password %p postfields %p easy %p \n",
+         fuzz->url,
+         fuzz->username,
+         fuzz->password,
+         fuzz->postfields,
+         fuzz->easy);
+
   fuzz_free((void **)&fuzz->url);
   fuzz_free((void **)&fuzz->username);
   fuzz_free((void **)&fuzz->password);
