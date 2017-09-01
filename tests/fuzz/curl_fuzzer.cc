@@ -32,7 +32,7 @@
  * Fuzzing entry point. This function is passed a buffer containing a test
  * case.  This test case should drive the CURL API into making a request.
  */
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
   int rc = 0;
   int tlv_rc;
@@ -329,7 +329,7 @@ char *fuzz_tlv_to_string(TLV *tlv)
   char *tlvstr;
 
   /* Allocate enough space, plus a null terminator */
-  tlvstr = malloc(tlv->length + 1);
+  tlvstr = (char *)malloc(tlv->length + 1);
 
   if(tlvstr != NULL) {
     memcpy(tlvstr, tlv->value, tlv->length);
