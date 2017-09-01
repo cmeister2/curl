@@ -22,45 +22,6 @@ addons:
 matrix:
     include:
         - os: linux
-          compiler: gcc
-          dist: trusty
-          env: T=normal
-        - os: linux
-          compiler: clang
-          dist: trusty
-          env: T=debug
-        - os: osx
-          compiler: gcc
-          env: T=debug
-        - os: osx
-          compiler: gcc
-          env: T=debug C="--with-ssl=/usr/local/opt/openssl --with-libmetalink"
-        - os: osx
-          compiler: gcc
-          env: T=debug C="--with-ssl=/usr/local/opt/libressl --with-libmetalink"
-        - os: osx
-          compiler: clang
-          env: T=debug C="--without-ssl --with-darwinssl --with-libmetalink"
-        - os: osx
-          compiler: clang
-          env: T=normal
-        - os: linux
-          compiler: gcc
-          dist: trusty
-          env: T=cmake
-        - os: linux
-          compiler: clang
-          dist: trusty
-          env: T=cmake
-        - os: linux
-          compiler: gcc
-          dist: precise
-          env: T=coverage
-        - os: linux
-          compiler: gcc
-          dist: trusty
-          env: T=distcheck
-        - os: linux
           compiler: clang
           dist: trusty
           env: T=fuzzer
@@ -147,7 +108,9 @@ script:
           export CC=clang
           export CXX=clang++
           export CFLAGS="-fsanitize=address"
-          export CXXFLAGS="-fsanitize=address -stdlib=libc++"
+                
+          # Use libstdc++ specifically only for travis because it doesn't have libc++
+          export CXXFLAGS="-fsanitize=address -stdlib=libstdc++"
           ./configure --disable-shared --enable-debug --enable-maintainer-mode
           make
           cd tests/fuzz
