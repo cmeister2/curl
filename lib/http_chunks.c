@@ -126,8 +126,12 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
   }
 
   while(length) {
+
+    MDBG("Length %ld state %d", length, ch->state);
+
     switch(ch->state) {
     case CHUNK_HEX:
+      MDBG("Chunk-Hex");
       if(Curl_isxdigit(*datap)) {
         if(ch->hexindex < MAXNUM_SIZE) {
           ch->hexbuffer[ch->hexindex] = *datap;
@@ -165,6 +169,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       break;
 
     case CHUNK_LF:
+      MDBG("Chunk-Lf");
       /* waiting for the LF after a chunk size */
       if(*datap == 0x0a) {
         /* we're now expecting data to come, unless size was zero! */
@@ -181,6 +186,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       break;
 
     case CHUNK_DATA:
+      MDBG("Chunk-Data");
       /* We expect 'datasize' of data. We have 'length' right now, it can be
          more or less than 'datasize'. Get the smallest piece.
       */
@@ -192,6 +198,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
              IDENTITY : data->req.auto_decoding) {
       case IDENTITY:
 #endif
+        MDBG("Identity");
         if(!k->ignorebody) {
           if(!data->set.http_te_skip)
             result = Curl_client_write(conn, CLIENTWRITE_BODY, datap,
@@ -213,6 +220,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
         break;
 
       case GZIP:
+        MDBG("gzip");
         /* update data->req.keep.str to point to the chunk data. */
         data->req.str = datap;
         result = Curl_unencode_gzip_write(conn, &data->req,
@@ -249,6 +257,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       break;
 
     case CHUNK_POSTLF:
+      MDBG("Chunk-PostLF");
       if(*datap == 0x0a) {
         /* The last one before we go back to hex state and start all over. */
         Curl_httpchunk_init(conn); /* sets state back to CHUNK_HEX */
@@ -260,6 +269,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       break;
 
     case CHUNK_TRAILER:
+      MDBG("Chunk-Trailer");
       if((*datap == 0x0d) || (*datap == 0x0a)) {
         /* this is the end of a trailer, but if the trailer was zero bytes
            there was no trailer and we move on */
@@ -322,6 +332,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       break;
 
     case CHUNK_TRAILER_CR:
+      MDBG("Chunk-TrailerCR");
       if(*datap == 0x0a) {
         ch->state = CHUNK_TRAILER_POSTCR;
         datap++;
@@ -332,6 +343,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       break;
 
     case CHUNK_TRAILER_POSTCR:
+      MDBG("Chunk-TrailerPostCR");
       /* We enter this state when a CR should arrive so we expect to
          have to first pass a CR before we wait for LF */
       if((*datap != 0x0d) && (*datap != 0x0a)) {
@@ -349,6 +361,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       break;
 
     case CHUNK_STOP:
+      MDBG("Chunk-Stop");
       if(*datap == 0x0a) {
         length--;
 
