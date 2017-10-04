@@ -107,6 +107,13 @@ typedef void CURLSH;
  * libcurl external API function linkage decorations.
  */
 
+#define MDBG(FMT, ...) \
+        fprintf(stderr, "[DBG:%s:%d] " FMT, \
+                __FUNCTION__, \
+                __LINE__, \
+                #__VA_ARGS__); \
+        fprintf(stderr, "\n")
+
 #ifdef CURL_STATICLIB
 #  define CURL_EXTERN
 #elif defined(WIN32) || defined(_WIN32) || defined(__SYMBIAN32__)
