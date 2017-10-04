@@ -1893,6 +1893,7 @@ static CURLMcode multi_runsingle(struct Curl_multi *multi,
 
       /* read/write data if it is ready to do so */
       result = Curl_readwrite(data->easy_conn, data, &done, &comeback);
+      MDBG("Result: %d (RECV_ERROR %d)", result, CURLE_RECV_ERROR);
 
       k = &data->req;
 
@@ -1912,6 +1913,8 @@ static CURLMcode multi_runsingle(struct Curl_multi *multi,
         CURLcode ret = Curl_retry_request(data->easy_conn, &newurl);
         if(!ret)
           retry = (newurl)?TRUE:FALSE;
+
+        MDBG("Retrying? %d", retry);
 
         if(retry) {
           /* if we are to retry, set the result to OK and consider the
