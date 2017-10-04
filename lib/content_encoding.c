@@ -134,8 +134,7 @@ inflate_stream(struct connectdata *conn,
       /* Done? clean up, return */
       if(status == Z_STREAM_END) {
         free(decomp);
-        if(inflateEnd(z) == Z_OK)
-        {
+        if(inflateEnd(z) == Z_OK) {
           myrc = exit_zlib(z, &k->zlib_init, result);
           MDBG("myrc: %d", myrc);
           return myrc;
