@@ -98,6 +98,8 @@ inflate_stream(struct connectdata *conn,
   CURLcode result = CURLE_OK;   /* Curl_client_write status */
   char *decomp;                 /* Put the decompressed data here. */
 
+  MDBG("Boop");
+
   /* Dynamically allocate a buffer for decompression because it's uncommonly
      large to hold on the stack */
   decomp = malloc(DSIZ);
@@ -169,6 +171,7 @@ Curl_unencode_deflate_write(struct connectdata *conn,
                             ssize_t nread)
 {
   z_stream *z = &k->z;          /* zlib state structure */
+  int rc;
 
   /* Initialize zlib? */
   if(k->zlib_init == ZLIB_UNINIT) {
@@ -176,7 +179,10 @@ Curl_unencode_deflate_write(struct connectdata *conn,
     z->zalloc = (alloc_func)zalloc_cb;
     z->zfree = (free_func)zfree_cb;
 
-    if(inflateInit(z) != Z_OK)
+    rc = inflateInit(z);
+    MDBG("InflateInit rc: %d", rc);
+
+    if(rc != Z_OK)
       return process_zlib_error(conn, z);
     k->zlib_init = ZLIB_INIT;
   }
