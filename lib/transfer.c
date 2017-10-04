@@ -497,6 +497,11 @@ static CURLcode readwrite_data(struct Curl_easy *data,
     /* indicates data of zero size, i.e. empty file */
     is_empty_data = ((nread == 0) && (k->bodywrites == 0)) ? TRUE : FALSE;
 
+    MDBG("nread %d is_empty_data %d k->bodywrites %d",
+         nread,
+         is_empty_data,
+         k->bodywrites);
+
     /* NUL terminate, allowing string ops to be used */
     if(0 < nread || is_empty_data) {
       k->buf[nread] = 0;
