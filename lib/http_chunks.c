@@ -205,13 +205,11 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       case DEFLATE:
         /* update data->req.keep.str to point to the chunk data. */
         data->req.str = datap;
-
-{
-  MDBG("In state DEFLATE");
-}
-
         result = Curl_unencode_deflate_write(conn, &data->req,
                                              (ssize_t)piece);
+
+        MDBG("deflate piece %zu rc: %d", piece, result);
+
         break;
 
       case GZIP:
