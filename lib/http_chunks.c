@@ -129,7 +129,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
 
   while(length) {
     mystr[0] = *datap;
-    MDBG("Length %ld state %d datap %s", length, ch->state, datap);
+    MDBG("Length %ld state %d datap %s", length, ch->state, mystr);
 
     switch(ch->state) {
     case CHUNK_HEX:
