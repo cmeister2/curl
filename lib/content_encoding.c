@@ -97,14 +97,16 @@ inflate_stream(struct connectdata *conn,
   int status;                   /* zlib status */
   CURLcode result = CURLE_OK;   /* Curl_client_write status */
   char *decomp;                 /* Put the decompressed data here. */
-
-  MDBG("Boop");
+  CURLcode myrc;
+  int zmyrc;
 
   /* Dynamically allocate a buffer for decompression because it's uncommonly
      large to hold on the stack */
   decomp = malloc(DSIZ);
   if(decomp == NULL) {
-    return exit_zlib(z, &k->zlib_init, CURLE_OUT_OF_MEMORY);
+    myrc = exit_zlib(z, &k->zlib_init, CURLE_OUT_OF_MEMORY);
+    MDBG("myrc: %d", myrc);
+    return myrc;
   }
 
   /* because the buffer size is fixed, iteratively decompress and transfer to
@@ -123,7 +125,9 @@ inflate_stream(struct connectdata *conn,
         /* if !CURLE_OK, clean up, return */
         if(result) {
           free(decomp);
-          return exit_zlib(z, &k->zlib_init, result);
+          myrc = exit_zlib(z, &k->zlib_init, result);
+          MDBG("myrc: %d", myrc);
+          return myrc;
         }
       }
 
@@ -131,8 +135,15 @@ inflate_stream(struct connectdata *conn,
       if(status == Z_STREAM_END) {
         free(decomp);
         if(inflateEnd(z) == Z_OK)
-          return exit_zlib(z, &k->zlib_init, result);
-        return exit_zlib(z, &k->zlib_init, process_zlib_error(conn, z));
+        {
+          myrc = exit_zlib(z, &k->zlib_init, result);
+          MDBG("myrc: %d", myrc);
+          return myrc;
+        }
+
+        myrc = exit_zlib(z, &k->zlib_init, process_zlib_error(conn, z));
+        MDBG("myrc: %d", myrc);
+        return myrc;
       }
 
       /* Done with these bytes, exit */
@@ -140,6 +151,7 @@ inflate_stream(struct connectdata *conn,
       /* status is always Z_OK at this point! */
       if(z->avail_in == 0) {
         free(decomp);
+        MDBG("result: %d", result);
         return result;
       }
     }
@@ -148,9 +160,15 @@ inflate_stream(struct connectdata *conn,
          to fix and continue anyway */
 
       (void) inflateEnd(z);     /* don't care about the return code */
-      if(inflateInit2(z, -MAX_WBITS) != Z_OK) {
+
+      zmyrc = inflateInit2(z, -MAX_WBITS);
+      MDBG("zmyrc: %d", zmyrc);
+
+      if(zmyrc != Z_OK) {
         free(decomp);
-        return exit_zlib(z, &k->zlib_init, process_zlib_error(conn, z));
+        myrc = exit_zlib(z, &k->zlib_init, process_zlib_error(conn, z));
+        MDBG("myrc: %d", myrc);
+        return myrc;
       }
       z->next_in = orig_in;
       z->avail_in = nread;
@@ -159,10 +177,13 @@ inflate_stream(struct connectdata *conn,
     }
     else {                      /* Error; exit loop, handle below */
       free(decomp);
-      return exit_zlib(z, &k->zlib_init, process_zlib_error(conn, z));
+      myrc = exit_zlib(z, &k->zlib_init, process_zlib_error(conn, z));
+      MDBG("myrc: %d", myrc);
+      return myrc;
     }
   }
   /* Will never get here */
+  MDBG("will never get here");
 }
 
 CURLcode
