@@ -114,6 +114,8 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
   size_t piece;
   curl_off_t length = (curl_off_t)datalen;
   size_t *wrote = (size_t *)wrotep;
+  char mystr[2];
+  mystr[1] = 0;
 
   *wrote = 0; /* nothing's written yet */
 
@@ -126,8 +128,8 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
   }
 
   while(length) {
-
-    MDBG("Length %ld state %d", length, ch->state);
+    mystr[0] = *datap;
+    MDBG("Length %ld state %d datap %s", length, ch->state, datap);
 
     switch(ch->state) {
     case CHUNK_HEX:
@@ -186,11 +188,14 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       break;
 
     case CHUNK_DATA:
-      MDBG("Chunk-Data");
       /* We expect 'datasize' of data. We have 'length' right now, it can be
          more or less than 'datasize'. Get the smallest piece.
       */
       piece = curlx_sotouz((ch->datasize >= length)?length:ch->datasize);
+      MDBG("Chunk-Data piece %zu datasize %ld length %d",
+           piece,
+           ch_datasize,
+           length);
 
       /* Write the data portion available */
 #ifdef HAVE_LIBZ
