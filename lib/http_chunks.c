@@ -166,6 +166,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
 
         if(curlx_strtoofft(ch->hexbuffer, &endptr, 16, &ch->datasize))
           return CHUNKE_ILLEGAL_HEX;
+        MDBG("ch->datasize is now %ld", ch->datasize);
         ch->state = CHUNK_LF; /* now wait for the CRLF */
       }
       break;
@@ -221,7 +222,6 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
                                              (ssize_t)piece);
 
         MDBG("deflate piece %zu rc: %d", piece, result);
-
         break;
 
       case GZIP:

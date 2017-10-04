@@ -3636,18 +3636,22 @@ CURLcode Curl_http_readwrite_headers(struct Curl_easy *data,
           break;
 
         if(checkprefix("identity", start)) {
+          MDBG("auto_decoding now IDENTITY");
           k->auto_decoding = IDENTITY;
           start += 8;
         }
         else if(checkprefix("deflate", start)) {
+          MDBG("auto_decoding now deflate");
           k->auto_decoding = DEFLATE;
           start += 7;
         }
         else if(checkprefix("gzip", start)) {
+          MDBG("auto_decoding now gzip");
           k->auto_decoding = GZIP;
           start += 4;
         }
         else if(checkprefix("x-gzip", start)) {
+          MDBG("auto_decoding now gzip");
           k->auto_decoding = GZIP;
           start += 6;
         }

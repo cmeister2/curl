@@ -672,6 +672,7 @@ static CURLcode readwrite_data(struct Curl_easy *data,
 
         CHUNKcode res =
           Curl_httpchunk_read(conn, k->str, nread, &nread);
+          MDBG("result: %d", res);
 
         if(CHUNKE_OK < res) {
           if(CHUNKE_WRITE_ERROR == res) {
