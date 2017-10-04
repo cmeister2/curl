@@ -1318,6 +1318,8 @@ static CURLMcode multi_runsingle(struct Curl_multi *multi,
   time_t send_timeout_ms;
   int control;
 
+  MDBG("entry");
+
   if(!GOOD_EASY_HANDLE(data))
     return CURLM_BAD_EASY_HANDLE;
 
@@ -1893,7 +1895,7 @@ static CURLMcode multi_runsingle(struct Curl_multi *multi,
 
       /* read/write data if it is ready to do so */
       result = Curl_readwrite(data->easy_conn, data, &done, &comeback);
-      MDBG("Result: %d (RECV_ERROR %d)", result, CURLE_RECV_ERROR);
+      MDBG("Result %d (RECV_ERROR %d) done %d", result, CURLE_RECV_ERROR, done);
 
       k = &data->req;
 
@@ -2160,6 +2162,7 @@ CURLMcode curl_multi_perform(struct Curl_multi *multi, int *running_handles)
     SIGPIPE_VARIABLE(pipe_st);
 
     sigpipe_ignore(data, &pipe_st);
+    MDBG("running runsingle %p with data %p", multi, data);
     result = multi_runsingle(multi, now, data);
     sigpipe_restore(&pipe_st);
 
@@ -2609,6 +2612,7 @@ static CURLMcode multi_socket(struct Curl_multi *multi,
         data->easy_conn->cselect_bits = ev_bitmask;
 
       sigpipe_ignore(data, &pipe_st);
+      MDBG("running runsingle %p with data %p", multi, data);
       result = multi_runsingle(multi, now, data);
       sigpipe_restore(&pipe_st);
 
@@ -2651,6 +2655,7 @@ static CURLMcode multi_socket(struct Curl_multi *multi,
       SIGPIPE_VARIABLE(pipe_st);
 
       sigpipe_ignore(data, &pipe_st);
+      MDBG("running runsingle %p with data %p", multi, data);
       result = multi_runsingle(multi, now, data);
       sigpipe_restore(&pipe_st);
 
