@@ -361,6 +361,8 @@ struct Curl_multi *curl_multi_init(void)
 CURLMcode curl_multi_add_handle(struct Curl_multi *multi,
                                 struct Curl_easy *data)
 {
+  MDBG("Adding EASY %p to MULTI %p", data, multi);
+
   /* First, make some basic checks that the CURLM handle is a good handle */
   if(!GOOD_MULTI_HANDLE(multi))
     return CURLM_BAD_HANDLE;
@@ -440,6 +442,7 @@ CURLMcode curl_multi_add_handle(struct Curl_multi *multi,
 
   /* increase the node-counter */
   multi->num_easy++;
+  MDBG("Multi %p num easy %d", multi, multi->num_easy);
 
   /* increase the alive-counter */
   multi->num_alive++;
