@@ -237,6 +237,12 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       datap += piece;    /* move read pointer forward */
       length -= piece;   /* decrease space left in this round */
 
+      MDBG("wrote %zu ch->datasize %ld datap '%s' length %ld",
+           *wrote,
+           ch->datasize,
+           datap,
+           length);
+
       if(0 == ch->datasize)
         /* end of data this round, we now expect a trailing CRLF */
         ch->state = CHUNK_POSTLF;
