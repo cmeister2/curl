@@ -194,7 +194,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       piece = curlx_sotouz((ch->datasize >= length)?length:ch->datasize);
       MDBG("Chunk-Data piece %zu datasize %ld length %d",
            piece,
-           ch_datasize,
+           ch->datasize,
            length);
 
       /* Write the data portion available */
