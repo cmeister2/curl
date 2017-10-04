@@ -111,7 +111,7 @@ typedef void CURLSH;
         fprintf(stderr, "[DBG:%s:%d] " FMT, \
                 __FUNCTION__, \
                 __LINE__, \
-                #__VA_ARGS__); \
+                ##__VA_ARGS__); \
         fprintf(stderr, "\n")
 
 #ifdef CURL_STATICLIB
