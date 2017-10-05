@@ -82,6 +82,8 @@ static CURLcode
 exit_zlib(z_stream *z, zlibInitState *zlib_init, CURLcode result)
 {
   inflateEnd(z);
+  MDBG("InflateEnd z=%p", z);
+
   *zlib_init = ZLIB_UNINIT;
   return result;
 }
@@ -135,6 +137,7 @@ inflate_stream(struct connectdata *conn,
       if(status == Z_STREAM_END) {
         free(decomp);
         if(inflateEnd(z) == Z_OK) {
+          MDBG("InflateEnd z=%p", z);
           myrc = exit_zlib(z, &k->zlib_init, result);
           MDBG("myrc: %d", myrc);
           return myrc;
@@ -159,8 +162,10 @@ inflate_stream(struct connectdata *conn,
          to fix and continue anyway */
 
       (void) inflateEnd(z);     /* don't care about the return code */
+      MDBG("InflateEnd z=%p", z);
 
       zmyrc = inflateInit2(z, -MAX_WBITS);
+      MDBG("InflateInit2 z=%p", z);
       MDBG("zmyrc: %d", zmyrc);
 
       if(zmyrc != Z_OK) {
@@ -200,7 +205,7 @@ Curl_unencode_deflate_write(struct connectdata *conn,
     z->zfree = (free_func)zfree_cb;
 
     rc = inflateInit(z);
-    MDBG("InflateInit rc: %d", rc);
+    MDBG("InflateInit z=%p rc: %d", z, rc);
 
     if(rc != Z_OK)
       return process_zlib_error(conn, z);
