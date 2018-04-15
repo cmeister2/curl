@@ -15,22 +15,7 @@ addons:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-trusty-6.0
         packages:
-            - cmake
-            - gcc-7
-            - lcov
-            - clang-6.0
-            - valgrind
-            - libev-dev
-            - libc-ares-dev
-            - g++-7
-            - libstdc++-7-dev
-            - stunnel4
-            - libidn2-0-dev
-            - libssh2-1-dev
-            - libssh-dev
-            - krb5-user
-            - autopoint  # for libpsl that needs autoreconf that uses gettext that needs it
-            - libunistring-dev # for libidn2 neeed by libpsl
+
 
 matrix:
     include:
@@ -47,6 +32,9 @@ script:
     - |
         set -eo pipefail
         if [ "$T" = "normal" ]; then
+              sudo apt-get -qq update
+              sudo apt-get install -y cmake gcc-7 lcov clang-6.0 valgrind libev-dev libc-ares-dev g++-7 libstdc++-7-dev stunnel4 libidn2-0-dev libssh2-1-dev libssh-dev krb5-user autopoint libunistring-dev
+
              ./normal.sh
         fi
     - |
